@@ -1,0 +1,34 @@
+{
+  "name": "music",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/swagger": "^8.14.0",
+    "@fastify/swagger-ui": "^4.0.0",
+    "@prisma/adapter-pg": "^5.16.1",
+    "@prisma/client": "^5.16.1",
+    "fastify": "^4.27.0",
+    "fastify-cookie": "^5.7.0",
+    "fastify-oauth2": "^4.6.0",
+    "fastify-plugin": "^4.5.1",
+    "fastify-session": "^5.2.1",
+    "googleapis": "^139.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "nodemon": "^3.1.3",
+    "prisma": "^5.16.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}
