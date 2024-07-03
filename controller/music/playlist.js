@@ -1,3 +1,5 @@
+import prisma from "../../config/db.js";
+import supabase from "../../config/supabase.js";
 import {
   errorResponseHandler,
   successResponseHandler,
@@ -26,14 +28,37 @@ export async function addPublicPlaylistController(request, reply) {
   }
 }
 
-export function getAllUserPlaylists(request, reply) {
-  return {
-    hello: "playlist list",
-  };
+export async function getAllUserPlaylists(request, reply) {
+  try {
+    // testing 
+    const user = request.user;
+    successResponseHandler(reply, user)
+  } catch (err) {
+    errorResponseHandler(reply, 500, err)
+  }
 }
 
-export function addUserPlaylist() {
-  return "Adding new Playlist";
+export async function addUserPlaylist(request, reply) {
+  const { title } = request.body;
+  const user = request.user;
+  const userId = user.id
+  try {
+    const createdPlaylist = await prisma.user_playlists.create({
+      data: {
+        title,
+        user_id: userId,
+        created_by: userId
+      }
+    })
+
+    successResponseHandler(reply, createdPlaylist)
+
+  } catch (err) {
+    errorResponseHandler(reply, 500, err)
+  }
+
+
+  return "Adding new user Playlist";
 }
 
 export function removePlaylist() {

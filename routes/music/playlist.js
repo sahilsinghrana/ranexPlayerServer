@@ -16,55 +16,7 @@ async function playlistRoutes(fastify) {
 
 
   fastify.get("/user", getAllUserPlaylists);
-  fastify.post("/user",{
-    schema: {
-      description: 'Add User Playlist',
-      tags: ['playlist', 'user'],
-      summary: 'Adds user Playlist',
-      params: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            description: 'user id'
-          }
-        }
-      },
-      body: {
-        type: 'object',
-        properties: {
-          hello: { type: 'string' },
-          obj: {
-            type: 'object',
-            properties: {
-              some: { type: 'string' }
-            }
-          }
-        }
-      },
-      response: {
-        201: {
-          description: 'Successful response',
-          type: 'object',
-          properties: {
-            hello: { type: 'string' }
-          }
-        },
-        default: {
-          description: 'Default response',
-          type: 'object',
-          properties: {
-            foo: { type: 'string' }
-          }
-        }
-      },
-      security: [
-        {
-          "apiKey": []
-        }
-      ]
-    }
-  },  addUserPlaylist);
+  fastify.post("/user",  addUserPlaylist);
   fastify.delete("/user", removePlaylist);
 
   fastify.post("/user/update", updateUserPlaylist);

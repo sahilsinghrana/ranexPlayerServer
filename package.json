@@ -18,6 +18,8 @@
     "@fastify/swagger-ui": "^4.0.0",
     "@prisma/adapter-pg": "^5.16.1",
     "@prisma/client": "^5.16.1",
+    "@supabase/supabase-js": "^2.44.2",
+    "dotenv": "^16.4.5",
     "fastify": "^4.27.0",
     "fastify-cookie": "^5.7.0",
     "fastify-oauth2": "^4.6.0",

@@ -4,10 +4,13 @@ import {
   errorResponseHandler,
   successResponseHandler,
 } from "../../handler/responseHandler.js";
+import { authMiddleware } from "../../hooks/auth.hook.js";
 import playlistRoutes from "./playlist.js";
 import songRoutes from "./songs.js";
 
-async function musicRoutes(fastify, options) {
+async function musicRoutes(fastify) {
+  fastify.addHook('preHandler', authMiddleware)
+
   fastify.register(playlistRoutes, { prefix: "/playlist" });
   fastify.register(songRoutes, { prefix: "/song" });
 

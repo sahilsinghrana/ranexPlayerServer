@@ -3,6 +3,7 @@ import { successResponseHandler } from "../../handler/responseHandler.js";
 
 async function songRoutes(fastify, options) {
     fastify.get("/", (request, reply) => {
+  
         successResponseHandler(reply, {
             hello : "Songs"
         })
