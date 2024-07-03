@@ -1,9 +1,9 @@
 import Fastify from "fastify";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUI from "@fastify/swagger-ui";
+import fastifyMultipart from "@fastify/multipart";
 
 import cors from "@fastify/cors";
-import { fileURLToPath } from "url";
 import routes from "./routes/index.js";
 
 BigInt.prototype.toJSON = function () {
@@ -11,11 +11,11 @@ BigInt.prototype.toJSON = function () {
   return int ?? this.toString();
 };
 
-const __filename = fileURLToPath(import.meta.url);
-
 const fastify = Fastify({
   logger: true,
 });
+
+fastify.register(fastifyMultipart);
 
 await fastify.register(cors, {
   origin: "*", // Allow all origins (use specific domains in production)
