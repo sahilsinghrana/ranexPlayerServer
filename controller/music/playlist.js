@@ -2,7 +2,7 @@ import {
   errorResponseHandler,
   successResponseHandler,
 } from "../../handler/responseHandler.js";
-import { getPublicPlaylists } from "../../helpers/playlist.helpers.js";
+import { addPublicPlaylist, getPublicPlaylists } from "../../helpers/playlist.helpers.js";
 
 export async function getPublicPlaylistsConstroller(request, reply) {
   try {
@@ -10,6 +10,19 @@ export async function getPublicPlaylistsConstroller(request, reply) {
     successResponseHandler(reply, allPublicPlaylists);
   } catch (err) {
     errorResponseHandler(reply, 500, err);
+  }
+}
+
+export async function addPublicPlaylistController(request, reply) {
+  const { title } = request.body;
+  try {
+
+    const addedPlaylist = await addPublicPlaylist({
+      title
+    });
+    successResponseHandler(reply, addedPlaylist)
+  } catch (err) {
+    errorResponseHandler(reply, 500, err)
   }
 }
 

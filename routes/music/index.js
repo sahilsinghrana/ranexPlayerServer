@@ -5,9 +5,11 @@ import {
   successResponseHandler,
 } from "../../handler/responseHandler.js";
 import playlistRoutes from "./playlist.js";
+import songRoutes from "./songs.js";
 
 async function musicRoutes(fastify, options) {
   fastify.register(playlistRoutes, { prefix: "/playlist" });
+  fastify.register(songRoutes, { prefix: "/song" });
 
   fastify.get("/", async (request, reply) => {
     return { hello: "music routes" };
