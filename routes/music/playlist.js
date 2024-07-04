@@ -5,7 +5,7 @@ import {
   getAllUserPlaylists,
   getPublicPlaylistsConstroller,
   removePlaylist,
-  removeSongFromUsrePlaylist,
+  removeSongFromUserPlaylist,
   reorderSongInUserPlaylist,
   updateUserPlaylist,
 } from "../../controller/music/playlist.js";
@@ -21,7 +21,7 @@ async function playlistRoutes(fastify) {
 
   fastify.post("/user/update", updateUserPlaylist);
   fastify.post("/user/update/song", addSongToUserPlaylist);
-  fastify.delete("/user/update/song", removeSongFromUsrePlaylist);
+  fastify.delete("/user/update/song", removeSongFromUserPlaylist);
   fastify.patch("/user/update/song", reorderSongInUserPlaylist);
 }
 

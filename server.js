@@ -17,6 +17,11 @@ const fastify = Fastify({
   logger: true,
 });
 
+// await fastify.register(
+//   import('@fastify/compress'),
+//   { global: true }
+// )
+
 fastify.register(fastifyMultipart);
 
 await fastify.register(cors, {
