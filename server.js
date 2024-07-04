@@ -29,10 +29,10 @@ const fastify = Fastify({
   logger: envToLogger[process.env.ENVIRONMENT] ?? true,
 });
 
-await fastify.register(
-  import('@fastify/compress'),
-  { global: false }
-)
+// await fastify.register(
+//   import('@fastify/compress'),
+//   { global: false }
+// )
 
 fastify.register(fastifyMultipart);
 

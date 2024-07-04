@@ -1,9 +1,16 @@
+import prisma from "../config/db.js";
 
-export async function addPublicSong(data = {}) {
-    // const { title, path } = data;
-    console.log({
-        data
+export async function addPublicSong({
+    createdBy,
+    filePath,
+    title
+}) {
+    return await prisma.songs.create({
+        data: {
+            created_by: createdBy,
+            path: filePath,
+            title: title
+        }
     })
-    return data;
 }
 

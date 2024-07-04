@@ -10,10 +10,17 @@ import {
   updateUserPlaylist,
 } from "../../controller/music/playlist.js";
 
+import { checkAdminMiddleware } from "../../hooks/auth.hook.js";
+
 async function playlistRoutes(fastify) {
   fastify.get("/", getPublicPlaylistsConstroller);
   
-  fastify.post("/", addPublicPlaylistController)
+  fastify.route({
+    method : "POST",
+    url :"/",
+    handler : addPublicPlaylistController,
+    onRequest : checkAdminMiddleware
+  })
 
   fastify.get("/user", getAllUserPlaylists);
   fastify.post("/user",  addUserPlaylist);

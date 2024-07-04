@@ -1,18 +1,8 @@
-import { addSongController } from "../../controller/music/songs.controller.js";
-import { successResponseHandler } from "../../handler/responseHandler.js";
+import { addSongController, getPublicSongsController } from "../../controller/music/songs.controller.js";
 
-async function songRoutes(fastify, options) {
-    fastify.get("/", (request, reply) => {
-  
-        successResponseHandler(reply, {
-            hello : "Songs"
-        })
-    } )
-
+async function songRoutes(fastify) {
+    fastify.get("/", getPublicSongsController)
     fastify.post("/", addSongController)
-    
-
 }
-
 
 export default songRoutes;

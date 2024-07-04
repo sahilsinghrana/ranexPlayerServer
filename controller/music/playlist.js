@@ -20,11 +20,13 @@ export async function getPublicPlaylistsConstroller(request, reply) {
 
 export async function addPublicPlaylistController(request, reply) {
   checkAdminMiddleware(request, reply)
+  const userId = getUserIdFromUserObj(request.user)
   
   const { title } = request.body;
   try {
     const addedPlaylist = await addPublicPlaylist({
-      title
+      title,
+      userId
     });
     successResponseHandler(reply, addedPlaylist)
   } catch (err) {
