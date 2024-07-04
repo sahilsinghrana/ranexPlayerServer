@@ -1,7 +1,6 @@
 import supabase from "../config/supabase.js";
 import { errorResponseHandler, successResponseHandler } from "../handler/responseHandler.js";
 
-
 export const USER_ROLES = {
     ADMIN: "ADMIN",
     USER: "USER"

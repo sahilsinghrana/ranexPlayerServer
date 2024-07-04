@@ -13,14 +13,26 @@ BigInt.prototype.toJSON = function () {
   return int ?? this.toString();
 };
 
+const envToLogger = {
+  DEV: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
+      },
+    },
+  },
+}
+
 const fastify = Fastify({
-  logger: true,
+  logger: envToLogger[process.env.ENVIRONMENT] ?? true,
 });
 
-// await fastify.register(
-//   import('@fastify/compress'),
-//   { global: true }
-// )
+await fastify.register(
+  import('@fastify/compress'),
+  { global: false }
+)
 
 fastify.register(fastifyMultipart);
 

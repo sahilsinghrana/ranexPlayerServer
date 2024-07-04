@@ -12,6 +12,7 @@ import {
 
 async function playlistRoutes(fastify) {
   fastify.get("/", getPublicPlaylistsConstroller);
+  
   fastify.post("/", addPublicPlaylistController)
 
   fastify.get("/user", getAllUserPlaylists);

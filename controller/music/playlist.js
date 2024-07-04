@@ -7,6 +7,7 @@ import {
 
 import { getUserIdFromUserObj } from "../../helpers/auth.helpers.js";
 import { addPublicPlaylist, getPublicPlaylists } from "../../helpers/playlist.helpers.js";
+import { checkAdminMiddleware } from "../../hooks/auth.hook.js";
 
 export async function getPublicPlaylistsConstroller(request, reply) {
   try {
@@ -18,6 +19,8 @@ export async function getPublicPlaylistsConstroller(request, reply) {
 }
 
 export async function addPublicPlaylistController(request, reply) {
+  checkAdminMiddleware(request, reply)
+  
   const { title } = request.body;
   try {
     const addedPlaylist = await addPublicPlaylist({
