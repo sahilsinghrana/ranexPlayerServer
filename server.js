@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import "dotenv/config";
 
 import Fastify from "fastify";
 import fastifySwagger from "@fastify/swagger";
@@ -16,14 +16,14 @@ BigInt.prototype.toJSON = function () {
 const envToLogger = {
   DEV: {
     transport: {
-      target: 'pino-pretty',
+      target: "pino-pretty",
       options: {
-        translateTime: 'HH:MM:ss Z',
-        ignore: 'pid,hostname',
+        translateTime: "HH:MM:ss Z",
+        ignore: "pid,hostname",
       },
     },
   },
-}
+};
 
 const fastify = Fastify({
   logger: envToLogger[process.env.ENVIRONMENT] ?? true,
@@ -34,15 +34,14 @@ const fastify = Fastify({
 //   { global: false }
 // )
 
-fastify.register(fastifyMultipart);
-
 await fastify.register(cors, {
-  origin: "*", // Allow all origins (use specific domains in production)
-  methods: ["GET", "POST"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization", "Range"], // Specify allowed headers
-  exposedHeaders: ["Content-Range", "Accept-Ranges", "Content-Length"], // Specify exposed headers
+  origin: "*",
+  // methods: ["GET", "POST"], // Allowed HTTP methods
+  // allowedHeaders: ["Content-Type", "Authorization", "Range"], // Specify allowed headers
+  // exposedHeaders: ["Content-Range", "Accept-Ranges", "Content-Length"], // Specify exposed headers
 });
 
+fastify.register(fastifyMultipart);
 await fastify.register(fastifySwagger, {
   openapi: {
     openapi: "3.0.0",
@@ -91,6 +90,7 @@ await fastify.register(fastifySwaggerUI, {
   },
   transformSpecificationClone: true,
 });
+
 fastify.register(routes);
 
 await fastify.ready();
