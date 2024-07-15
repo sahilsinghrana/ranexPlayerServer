@@ -8,6 +8,10 @@ import fastifyMultipart from "@fastify/multipart";
 import cors from "@fastify/cors";
 import routes from "./routes/index.js";
 
+const port = process.env.PORT || 3000;
+const host = ("RENDER" in process.env) ? `0.0.0.0` : `localhost`;
+
+
 BigInt.prototype.toJSON = function () {
   const int = Number.parseInt(this.toString());
   return int ?? this.toString();
@@ -98,7 +102,8 @@ fastify.swagger();
 
 fastify.listen(
   {
-    port: 3000,
+    port: port,
+    host: host
   },
   (err, address) => {
     if (err) {

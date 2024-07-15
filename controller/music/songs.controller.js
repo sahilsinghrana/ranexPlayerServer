@@ -10,8 +10,6 @@ import { extractExtensionFromString, generateRandomId } from "../../helpers/util
 import { getUserIdFromUserObj } from "../../helpers/auth.helpers.js";
 import prisma from "../../config/db.js";
 
-
-
 async function saveSong(part) {
     const fileName = part.filename;
     const ext = extractExtensionFromString(fileName);
@@ -22,6 +20,7 @@ async function saveSong(part) {
     await pump(part.file, fs.createWriteStream(filePath))
     return filePath;
 }
+
 export async function addSongController(request, reply) {
     try {
         let filePath, title;
@@ -53,7 +52,6 @@ export async function addSongController(request, reply) {
         return errorResponseHandler(reply, 500, err)
     }
 }
-
 
 export async function getPublicSongsController(request, reply) {
     try {
