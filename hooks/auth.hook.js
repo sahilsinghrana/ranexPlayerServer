@@ -1,8 +1,8 @@
-import supabase from "../config/supabase.js";
-import { USER_ROLES } from "../controller/auth.controller.js";
-import { errorResponseHandler } from "../handler/responseHandler.js";
+const supabase = require("../config/supabase.js");
+const { USER_ROLES } = require("../controller/auth.controller.js");
+const { errorResponseHandler } = require("../handler/responseHandler.js");
 
-export async function verifyAccessTokenHook(req, reply) {
+module.exports.verifyAccessTokenHook = async function (req, reply) {
   try {
     const reqAccessToken = req.headers.authorization;
     const extractedToken = reqAccessToken?.split("Basic ")[1];
@@ -11,7 +11,7 @@ export async function verifyAccessTokenHook(req, reply) {
   } catch (err) {
     errorResponseHandler(reply, 403, err);
   }
-}
+};
 
 /**
  *
@@ -42,7 +42,7 @@ function isUserAdmin(user = {}) {
   return getRoleFromUser(user) === USER_ROLES.ADMIN;
 }
 
-export async function authMiddleware(req, reply) {
+module.exports.authMiddleware = async function (req, reply) {
   try {
     const user = await validateToken(req);
     req.user = user;
@@ -50,13 +50,13 @@ export async function authMiddleware(req, reply) {
     errorResponseHandler(reply, 401, err);
     return reply;
   }
-}
+};
 
-export async function checkAdminMiddleware(req, reply) {
+module.exports.checkAdminMiddleware = async function (req, reply) {
   try {
     const user = await validateToken(req);
     if (!isUserAdmin(user)) errorResponseHandler(reply, 401, "Unauthorized!");
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};

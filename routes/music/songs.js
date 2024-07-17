@@ -1,8 +1,11 @@
-import { addSongController, getPublicSongsController } from "../../controller/music/songs.controller.js";
+const router = require("express").Router();
 
-async function songRoutes(fastify) {
-    fastify.get("/", getPublicSongsController)
-    fastify.post("/", addSongController)
-}
+const {
+  addSongController,
+  getPublicSongsController,
+} = require("../../controller/music/songs.controller.js");
 
-export default songRoutes;
+router.get("/", getPublicSongsController);
+router.post("/", addSongController);
+
+module.exports = router;

@@ -1,15 +1,15 @@
-import prisma from "../config/db.js";
+const prisma = require("../config/db.js");
 
-export async function getPublicPlaylists() {
+module.exports.getPublicPlaylists = async function () {
   return await prisma.playlists.findMany();
-}
+};
 
-export async function addPublicPlaylist({title, userId}) {
+module.exports.addPublicPlaylist = async function ({ title, userId }) {
   return await prisma.playlists.create({
-    data : {
-      title : title,
-      isPublic : true,
-      created_by : userId
-    }
-  })
-}
+    data: {
+      title: title,
+      isPublic: true,
+      created_by: userId,
+    },
+  });
+};

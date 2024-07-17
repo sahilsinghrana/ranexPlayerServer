@@ -1,4 +1,6 @@
-import {
+const router = require("express").Router();
+
+const {
   addPublicPlaylistController,
   addSongToUserPlaylist,
   addUserPlaylist,
@@ -8,34 +10,24 @@ import {
   removeSongFromUserPlaylist,
   reorderSongInUserPlaylist,
   updateUserPlaylist,
-} from "../../controller/music/playlist.js";
+} = require("../../controller/music/playlist.js");
 
-import { authMiddleware, checkAdminMiddleware } from "../../hooks/auth.hook.js";
+const {
+  authMiddleware,
+  checkAdminMiddleware,
+} = require("../../hooks/auth.hook.js");
 
-async function playlistRoutes(fastify) {
-  fastify.get("/", getPublicPlaylistsConstroller);
-  fastify.route({
-    method: "POST",
-    url: "/",
-    handler: addPublicPlaylistController,
-    onRequest: checkAdminMiddleware,
-  });
+router.get("/", getPublicPlaylistsConstroller);
+router.post("/", checkAdminMiddleware, addPublicPlaylistController);
 
-  fastify.register(async (privateFastify) => {
-    privateFastify.addHook("preHandler", authMiddleware);
+router.get("/user", authMiddleware, getAllUserPlaylists);
+router.post("/user", authMiddleware, addUserPlaylist);
+router.delete("/user", authMiddleware, removePlaylist);
 
-    privateFastify.get("/user", getAllUserPlaylists);
-    privateFastify.post("/user", addUserPlaylist);
-    privateFastify.delete("/user", removePlaylist);
+router.post("/user/update", authMiddleware, updateUserPlaylist);
 
-    privateFastify.post("/user/update", updateUserPlaylist);
+router.post("/user/update/song", authMiddleware, addSongToUserPlaylist);
+router.delete("/user/update/song", authMiddleware, removeSongFromUserPlaylist);
+router.patch("/user/update/song", authMiddleware, reorderSongInUserPlaylist);
 
-    privateFastify.post("/user/update/song", addSongToUserPlaylist);
-    privateFastify.delete("/user/update/song", removeSongFromUserPlaylist);
-    privateFastify.patch("/user/update/song", reorderSongInUserPlaylist);
-  });
-}
-
-function privateRoutes(privateFastify) {}
-
-export default playlistRoutes;
+module.exports = router;

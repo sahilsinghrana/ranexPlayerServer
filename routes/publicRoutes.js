@@ -1,12 +1,7 @@
-import { verifyAccessTokenHook } from "../hooks/auth.hook.js";
-import { publicPlaylistRoutes } from "./music/playlist.js";
+const router = require("express").Router();
+const { verifyAccessTokenHook } = require("../hooks/auth.hook.js");
+const { publicPlaylistRoutes } = require("./music/playlist.js");
 
-async function publicRoutes(fastify) {
-  fastify.addHook("preHandler", verifyAccessTokenHook);
+fastify.use("/music", verifyAccessTokenHook, publicPlaylistRoutes);
 
-  fastify.register(publicPlaylistRoutes, {
-    prefix: "/music",
-  });
-}
-
-export default publicRoutes;
+module.exports = router;

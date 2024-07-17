@@ -1,18 +1,13 @@
-import { successResponseHandler } from "../handler/responseHandler.js";
-import { verifyAccessTokenHook } from "../hooks/auth.hook.js";
-import authRoutes from "./auth.js";
-import musicRoutes from "./music/index.js";
+const router = require("express").Router();
 
-async function routes(fastify) {
-  // fastify.addHook('preHandler', verifyAccessTokenHook)
+const { successResponseHandler } = require("../handler/responseHandler.js");
+const authRoutes = require("./auth.js");
+const musicRoutes = require("./music/index.js");
 
-  fastify.register(authRoutes);
-  fastify.register(musicRoutes, {
-    prefix: "/music",
-  });
-  fastify.get("/", async (request, reply) => {
-    successResponseHandler(reply, { hello: "world" });
-  });
-}
+router.use(authRoutes);
+router.use("/music", musicRoutes);
+router.get("/", async (request, response) => {
+  successResponseHandler(response, { hello: "world" });
+});
 
-export default routes;
+module.exports = router;

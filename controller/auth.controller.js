@@ -1,15 +1,15 @@
-import supabase from "../config/supabase.js";
-import {
+const supabase = require("../config/supabase.js");
+const {
   errorResponseHandler,
   successResponseHandler,
-} from "../handler/responseHandler.js";
+} = require("../handler/responseHandler.js");
 
-export const USER_ROLES = {
+module.exports.USER_ROLES = {
   ADMIN: "ADMIN",
   USER: "USER",
 };
 
-export async function loginController(req, reply) {
+module.exports.loginController = async function (req, reply) {
   const { email, password } = req.body;
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -31,9 +31,9 @@ export async function loginController(req, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export async function signupController(req, reply) {
+module.exports.signupController = async function (req, reply) {
   const { email, password } = req.body;
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -52,9 +52,9 @@ export async function signupController(req, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export async function logoutController(req, reply) {
+module.exports.logoutController = async function (req, reply) {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -63,4 +63,4 @@ export async function logoutController(req, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
