@@ -1,21 +1,23 @@
-import supabase from "../config/supabase.js";
-import {
+const supabase = require("../config/supabase.js");
+const {
   errorResponseHandler,
   successResponseHandler,
-} from "../handler/responseHandler.js";
+} = require("../handler/responseHandler.js");
 
-export const USER_ROLES = {
+module.exports.USER_ROLES = {
   ADMIN: "ADMIN",
   USER: "USER",
 };
 
-export async function loginController(req, reply) {
+module.exports.loginController = async function (req, res) {
   const { email, password } = req.body;
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
+
+    if (error) throw new Error(error);
 
     if (!data?.user?.user_metadata.userRole) {
       supabase.auth.updateUser({
@@ -24,16 +26,13 @@ export async function loginController(req, reply) {
         },
       });
     }
-
-    if (error) {
-      errorResponseHandler(reply, 500, error);
-    } else successResponseHandler(reply, data);
+    successResponseHandler(res, data);
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
-}
+};
 
-export async function signupController(req, reply) {
+module.exports.signupController = async function (req, res) {
   const { email, password } = req.body;
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -46,21 +45,21 @@ export async function signupController(req, reply) {
         },
       },
     });
-    if (error) {
-      errorResponseHandler(reply, 500, error);
-    } else successResponseHandler(reply, data);
-  } catch (err) {
-    errorResponseHandler(reply, 500, err);
-  }
-}
 
-export async function logoutController(req, reply) {
+    if (error) throw new Error(error);
+
+    successResponseHandler(res, data);
+  } catch (err) {
+    errorResponseHandler(res, 500, err);
+  }
+};
+
+module.exports.logoutController = async function (req, res) {
   try {
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      errorResponseHandler(reply, 500, error);
-    } else successResponseHandler(reply, "Signed out successfully!");
+    if (error) throw new Error(error);
+    successResponseHandler(res, "Signed out successfully!");
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
-}
+};

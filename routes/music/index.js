@@ -1,44 +1,39 @@
-import db from "../../config/db.js";
-import streamController from "../../controller/music/stream.js";
-import {
+const router = require("express").Router();
+
+const db = require("../../config/db.js");
+// const streamController = require("../../controller/music/stream.js");
+const {
   errorResponseHandler,
   successResponseHandler,
-} from "../../handler/responseHandler.js";
-import playlistRoutes from "./playlist.js";
-import songRoutes from "./songs.js";
+} = require("../../handler/responseHandler.js");
 
-async function musicRoutes(fastify) {
-  fastify.register(playlistRoutes, { prefix: "/playlist" });
-  fastify.register(songRoutes, { prefix: "/song" });
+const playlistRoutes = require("./playlist.js");
+const songRoutes = require("./songs.js");
 
-  fastify.get("/", async (request, reply) => {
-    return { hello: "music routes" };
-  });
+router.use("/playlist", playlistRoutes);
+router.use("/song", songRoutes);
 
-  fastify.post("/albums", async (request, reply) => {
-    const { title } = request.body;
-    try {
-      const record = await db.albums.create({
-        data: {
-          title: title,
-          created_at: new Date(),
-        },
-      });
-
-      successResponseHandler(reply, record);
-    } catch (err) {
-      errorResponseHandler(reply, 400, err);
-    }
-  });
-
-  fastify.get("/albums", async (request, reply) => {
-    const albums = await db.albums.findMany();
-    return successResponseHandler(reply, {
-      albums,
+router.post("/albums", async (request, reply) => {
+  const { title } = request.body;
+  try {
+    const record = await db.albums.create({
+      data: {
+        title: title,
+        created_at: new Date(),
+      },
     });
+
+    successResponseHandler(reply, record);
+  } catch (err) {
+    errorResponseHandler(reply, 400, err);
+  }
+});
+
+router.get("/albums", async (request, reply) => {
+  const albums = await db.albums.findMany();
+  return successResponseHandler(reply, {
+    albums,
   });
+});
 
-  fastify.get("/stream", streamController);
-}
-
-export default musicRoutes;
+module.exports = router;

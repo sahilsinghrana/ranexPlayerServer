@@ -1,7 +1,7 @@
-import pg from "pg";
+const pg = require("pg");
 
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
+const { PrismaPg } = require("@prisma/adapter-pg");
+const { PrismaClient } = require("@prisma/client");
 
 const { Pool } = pg;
 
@@ -11,4 +11,4 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-export default prisma;
+module.exports = prisma;

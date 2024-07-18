@@ -1,17 +1,18 @@
-export function successResponseHandler(reply, responseData) {
-    reply.status(200);
-    reply.send({
-        data : responseData,
-        message : "Success",
-        responseCode: 1
-    })
-}
+module.exports.successResponseHandler = function (res, responseData) {
+  res.status(200);
+  res.send({
+    data: responseData,
+    message: "Success",
+    responseCode: 1,
+  });
+};
 
-export function errorResponseHandler(reply, status, error) {
-    const errorMessage = typeof error === "string" ? error : (error?.message || "Unexpected Error!");
-    reply.status(status || 500);
-    reply.send({
-        responseCode : 0,
-        message : errorMessage
-    })
-}
+module.exports.errorResponseHandler = function (res, status, error) {
+  const errorMessage =
+    typeof error === "string" ? error : error?.message || "Unexpected Error!";
+  res.status(status || 500);
+  res.json({
+    responseCode: 0,
+    message: errorMessage,
+  });
+};

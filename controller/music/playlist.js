@@ -1,28 +1,27 @@
-import prisma from "../../config/db.js";
-import supabase from "../../config/supabase.js";
+const prisma = require("../../config/db.js");
 
-import {
+const {
   errorResponseHandler,
   successResponseHandler,
-} from "../../handler/responseHandler.js";
+} = require("../../handler/responseHandler.js");
 
-import { getUserIdFromUserObj } from "../../helpers/auth.helpers.js";
-import {
+const { getUserIdFromUserObj } = require("../../helpers/auth.helpers.js");
+const {
   addPublicPlaylist,
   getPublicPlaylists,
-} from "../../helpers/playlist.helpers.js";
-import { checkAdminMiddleware } from "../../hooks/auth.hook.js";
+} = require("../../helpers/playlist.helpers.js");
+const { checkAdminMiddleware } = require("../../middlewares/auth.hook.js");
 
-export async function getPublicPlaylistsConstroller(request, reply) {
+module.exports.getPublicPlaylistsConstroller = async function (request, reply) {
   try {
     const allPublicPlaylists = await getPublicPlaylists();
     successResponseHandler(reply, allPublicPlaylists);
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export async function addPublicPlaylistController(request, reply) {
+module.exports.addPublicPlaylistController = async function (request, reply) {
   checkAdminMiddleware(request, reply);
   const userId = getUserIdFromUserObj(request.user);
 
@@ -36,9 +35,9 @@ export async function addPublicPlaylistController(request, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export async function getAllUserPlaylists(request, reply) {
+module.exports.getAllUserPlaylists = async function (request, reply) {
   try {
     const userId = getUserIdFromUserObj(request.user);
 
@@ -51,9 +50,9 @@ export async function getAllUserPlaylists(request, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export async function addUserPlaylist(request, reply) {
+module.exports.addUserPlaylist = async function (request, reply) {
   const { title } = request.body;
   const userId = getUserIdFromUserObj(request.user);
   try {
@@ -68,9 +67,9 @@ export async function addUserPlaylist(request, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export async function removePlaylist(request, reply) {
+module.exports.removePlaylist = async function (request, reply) {
   try {
     const { playlistId } = request.body;
     if (!playlistId) throw new Error("playlistId is required");
@@ -85,13 +84,13 @@ export async function removePlaylist(request, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export function getSongsFromPlaylist() {
+module.exports.getSongsFromPlaylist = function () {
   return "Retrieving songs from playlist";
-}
+};
 
-export async function updateUserPlaylist(request, reply) {
+module.exports.updateUserPlaylist = async function (request, reply) {
   try {
     const { title, playlistId } = request.body;
     if (!playlistId) throw new Error("playlistId is required");
@@ -110,16 +109,16 @@ export async function updateUserPlaylist(request, reply) {
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }
-}
+};
 
-export function addSongToUserPlaylist() {
+module.exports.addSongToUserPlaylist = function () {
   return "adding song playlist";
-}
+};
 
-export function removeSongFromUserPlaylist() {
+module.exports.removeSongFromUserPlaylist = function () {
   return "removing song playlist";
-}
+};
 
-export function reorderSongInUserPlaylist() {
+module.exports.reorderSongInUserPlaylist = function () {
   return "reordering song playlist";
-}
+};

@@ -44,4 +44,4 @@ function streamController(request, reply) {
   }
 }
 
-export default streamController;
+module.exports = streamController;
