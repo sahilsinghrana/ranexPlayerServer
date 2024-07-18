@@ -2,14 +2,15 @@ const supabase = require("../config/supabase.js");
 const { USER_ROLES } = require("../controller/auth.controller.js");
 const { errorResponseHandler } = require("../handler/responseHandler.js");
 
-module.exports.verifyAccessTokenHook = async function (req, reply) {
+module.exports.verifyAccessToken = async function (req, res, next) {
   try {
     const reqAccessToken = req.headers.authorization;
     const extractedToken = reqAccessToken?.split("Basic ")[1];
     if (extractedToken !== process.env.ACCESS_TOKEN)
       throw new Error("Unauthorized!!");
+    next();
   } catch (err) {
-    errorResponseHandler(reply, 403, err);
+    errorResponseHandler(res, 403, err);
   }
 };
 
@@ -42,13 +43,13 @@ function isUserAdmin(user = {}) {
   return getRoleFromUser(user) === USER_ROLES.ADMIN;
 }
 
-module.exports.authMiddleware = async function (req, reply) {
+module.exports.authMiddleware = async function (req, res, next) {
   try {
     const user = await validateToken(req);
     req.user = user;
+    next();
   } catch (err) {
-    errorResponseHandler(reply, 401, err);
-    return reply;
+    errorResponseHandler(res, 401, err);
   }
 };
 

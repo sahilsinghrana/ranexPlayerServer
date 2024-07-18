@@ -1,6 +1,8 @@
 require("dotenv/config");
 const express = require("express");
-
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const routes = require("./routes/index.js");
 
 const port = process.env.PORT || 3000;
@@ -11,7 +13,11 @@ BigInt.prototype.toJSON = function () {
   return int ?? this.toString();
 };
 
-app.use("/", routes);
+app.use(cors());
+app.use(cookieParser());
+app.use(bodyParser.json());
+
+app.use(routes);
 
 app.listen(port, (err) => {
   if (err) {

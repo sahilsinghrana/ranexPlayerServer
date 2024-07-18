@@ -4,8 +4,11 @@ const {
   addSongController,
   getPublicSongsController,
 } = require("../../controller/music/songs.controller.js");
+const { checkAdminMiddleware } = require("../../middlewares/auth.hook.js");
 
-router.get("/", getPublicSongsController);
-router.post("/", addSongController);
+router
+  .route("/")
+  .get(getPublicSongsController)
+  .post(checkAdminMiddleware, addSongController);
 
 module.exports = router;

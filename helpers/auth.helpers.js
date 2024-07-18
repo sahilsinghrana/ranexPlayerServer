@@ -1,3 +1,3 @@
-module.exportsgetUserIdFromUserObj = function (user = {}) {
+module.exports.getUserIdFromUserObj = function (user = {}) {
   return user.id;
 };

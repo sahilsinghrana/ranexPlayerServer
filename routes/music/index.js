@@ -6,15 +6,12 @@ const {
   errorResponseHandler,
   successResponseHandler,
 } = require("../../handler/responseHandler.js");
+
 const playlistRoutes = require("./playlist.js");
 const songRoutes = require("./songs.js");
 
 router.use("/playlist", playlistRoutes);
 router.use("/song", songRoutes);
-
-router.get("/", (request, reply) => {
-  successResponseHandler(reply, { hello: "music routes" });
-});
 
 router.post("/albums", async (request, reply) => {
   const { title } = request.body;

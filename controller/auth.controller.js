@@ -9,13 +9,15 @@ module.exports.USER_ROLES = {
   USER: "USER",
 };
 
-module.exports.loginController = async function (req, reply) {
+module.exports.loginController = async function (req, res) {
   const { email, password } = req.body;
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
+
+    if (error) throw new Error(error);
 
     if (!data?.user?.user_metadata.userRole) {
       supabase.auth.updateUser({
@@ -24,16 +26,13 @@ module.exports.loginController = async function (req, reply) {
         },
       });
     }
-
-    if (error) {
-      errorResponseHandler(reply, 500, error);
-    } else successResponseHandler(reply, data);
+    successResponseHandler(res, data);
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
 };
 
-module.exports.signupController = async function (req, reply) {
+module.exports.signupController = async function (req, res) {
   const { email, password } = req.body;
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -46,21 +45,21 @@ module.exports.signupController = async function (req, reply) {
         },
       },
     });
-    if (error) {
-      errorResponseHandler(reply, 500, error);
-    } else successResponseHandler(reply, data);
+
+    if (error) throw new Error(error);
+
+    successResponseHandler(res, data);
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
 };
 
-module.exports.logoutController = async function (req, reply) {
+module.exports.logoutController = async function (req, res) {
   try {
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      errorResponseHandler(reply, 500, error);
-    } else successResponseHandler(reply, "Signed out successfully!");
+    if (error) throw new Error(error);
+    successResponseHandler(res, "Signed out successfully!");
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
 };

@@ -10,7 +10,7 @@ const {
   addPublicPlaylist,
   getPublicPlaylists,
 } = require("../../helpers/playlist.helpers.js");
-const { checkAdminMiddleware } = require("../../hooks/auth.hook.js");
+const { checkAdminMiddleware } = require("../../middlewares/auth.hook.js");
 
 module.exports.getPublicPlaylistsConstroller = async function (request, reply) {
   try {
