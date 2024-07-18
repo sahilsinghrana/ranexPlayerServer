@@ -11,31 +11,6 @@ const authRoutes = require("./auth.js");
 const musicRoutes = require("./music/index.js");
 const userRoutes = require("./user/index.js");
 
-router.get("/auth/callback", async (req, res) => {
-  // NOTE - this does nothing
-  const code = req.query.code;
-  // const next = req.query.next ?? "/";
-  // console.log({
-  //   code,
-  //   cookie: req.cookies,
-  // });
-
-  try {
-    if (code) {
-      console.log("Exchanging code", req.query);
-      const session = await supabase.auth.exchangeCodeForSession(code);
-      console.log("SessionREcieved", session);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-
-  res.cookie("hell", "val");
-
-  // reply.redirect(`http://127.0.0.1:5173/`, 303);
-  res.redirect(process.env.CLIENT_URL || "https://diziplayer.netlify.app/");
-});
-
 router.use(verifyAccessToken, authRoutes);
 router.use("/music", verifyAccessToken, musicRoutes);
 router.use("/user", authMiddleware, userRoutes);
