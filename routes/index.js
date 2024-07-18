@@ -33,7 +33,7 @@ router.get("/auth/callback", async (req, res) => {
   res.cookie("hell", "val");
 
   // reply.redirect(`http://127.0.0.1:5173/`, 303);
-  res.redirect("https://turbo-guacamole-9jxqp6xpp67hx447-5173.app.github.dev/");
+  res.redirect(process.env.CLIENT_URL || "https://diziplayer.netlify.app/");
 });
 
 router.use(verifyAccessToken, authRoutes);
