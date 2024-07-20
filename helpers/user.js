@@ -1,3 +1,5 @@
+const { USER_ROLES } = require("../controller/auth.controller");
+
 module.exports.extractUserProfile = function (userObj = {}) {
   const { user_metadata = {} } = userObj;
 
@@ -8,5 +10,6 @@ module.exports.extractUserProfile = function (userObj = {}) {
     name: user_metadata.name,
     picture: user_metadata.picture,
     picture: user_metadata.picture,
+    iam: user_metadata?.userRole === USER_ROLES.ADMIN ? 1 : 0,
   };
 };

@@ -1,4 +1,6 @@
 require("dotenv/config");
+
+const compression = require("compression");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -14,6 +16,11 @@ BigInt.prototype.toJSON = function () {
 };
 
 app.use(cors());
+app.use(
+  compression({
+    level: 7,
+  })
+);
 app.use(cookieParser());
 app.use(bodyParser.json());
 
@@ -21,7 +28,7 @@ app.use(routes);
 
 app.listen(port, (err) => {
   if (err) {
-    console.error(err);
+    console.error("Err", err);
     process.exit(1);
   }
   console.log("running on port:", port);

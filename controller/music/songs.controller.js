@@ -1,72 +1,106 @@
-const util = require("node:util");
-const { pipeline } = require("node:stream");
 const fs = require("node:fs");
 
-const pump = util.promisify(pipeline);
-
+const path = require("node:path");
 const {
   errorResponseHandler,
   successResponseHandler,
 } = require("../../handler/responseHandler.js");
-const { addPublicSong } = require("../../helpers/songs.helper.js");
+
 const {
   extractExtensionFromString,
   generateRandomId,
 } = require("../../helpers/utils.js");
-const { getUserIdFromUserObj } = require("../../helpers/auth.helpers.js");
 const prisma = require("../../config/db.js");
+const { formidable } = require("formidable");
 
-async function saveSong(part) {
-  const fileName = part.filename;
-  const ext = extractExtensionFromString(fileName);
+const uploadFolder = path.join("public", "uploads", "music");
 
-  const randomFileName = generateRandomId().concat(".", ext);
+const filesJsonPath = uploadFolder + "/index.json";
 
-  const filePath = `./uploads/${randomFileName}`;
-  await pump(part.file, fs.createWriteStream(filePath));
-  return filePath;
+function addFileToJson(parsedFilesObj) {
+  const files = Object.values(parsedFilesObj).map((file) => {
+    return {
+      filepath: file[0]?.filepath || "",
+      fileName: file[0]?.newFilename || "",
+      originalFilename: file[0]?.originalFilename || "",
+      mimetype: file[0]?.mimetype || "",
+      size: file[0]?.size || "",
+    };
+  });
+
+  fs.readFile(filesJsonPath, "utf8", function readFileCallback(err, data) {
+    if (err) {
+      console.log("First errr");
+      return;
+    }
+
+    const obj = JSON.parse(data || "{}");
+    if (!Array.isArray(obj?.songs)) {
+      obj.songs = [];
+    }
+    obj.songs = obj.songs.concat(...files);
+
+    const json = JSON.stringify(obj);
+
+    fs.writeFile(
+      filesJsonPath,
+      json,
+      { flag: "wx", encoding: "utf-8" },
+      (err) => {
+        if (err) {
+          // console.log("thirid error");
+          return;
+        }
+        console.log("added too file", json);
+      }
+    ); // write it back
+  });
 }
 
-module.exports.addSongController = async function (request, reply) {
+module.exports.addSongController = async function (req, res) {
   try {
-    let filePath, title;
+    const form = formidable({
+      multiples: true,
+      uploadDir: uploadFolder,
+      maxFileSize: 100 * 1024 * 1024, // 10MB
+      filename: (name, _, part) => {
+        const { originalFilename } = part;
+        const ext = extractExtensionFromString(originalFilename);
 
-    const parts = request.parts();
-    for await (const part of parts) {
-      if (part.type === "file") {
-        console.log("GOT a file");
-        filePath = await saveSong(part);
-      } else {
-        if (
-          part?.fields?.title &&
-          part.mimetype === "text/plain" &&
-          part?.fields?.title?.value
-        ) {
-          title = await part?.fields?.title?.value;
-        }
-      }
-    }
-    // TODO - Validate and move file to assets folder and then later add it to db
-    if (filePath && title) {
-      const userId = getUserIdFromUserObj(request.user);
-      const addedSong = await addPublicSong({
-        filePath: filePath,
-        title: title,
-        createdBy: userId,
-      });
-      return successResponseHandler(reply, addedSong);
-    } else {
-      return errorResponseHandler(reply, 400, "title and file is required");
-    }
+        return name.concat("_", generateRandomId(), ".", ext);
+      },
+      allowEmptyFiles: false,
+      maxFiles: 6,
+      keepExtensions: true,
+      createDirsFromUploads: true,
+    });
+    form.parse(req, (err, fields, files) => {
+      if (err) throw new Error(err);
+      // console.log("Parsed", files);
+      // files.forEach;
+      addFileToJson(files);
+
+      res.json({ message: "hell", fields, files });
+    });
   } catch (err) {
-    return errorResponseHandler(reply, 500, err);
+    console.log(err);
+    return errorResponseHandler(res, 500, err);
   }
 };
 
 module.exports.getPublicSongsController = async function (request, reply) {
   try {
-    const publicSongs = await prisma.songs.findMany();
-    successResponseHandler(reply, publicSongs);
+    // const publicSongs = await prisma.songs.findMany();
+    fs.readFile(filesJsonPath, "utf8", function readFileCallback(err, data) {
+      if (err) {
+        console.log("First errr");
+        return;
+      }
+
+      const obj = JSON.parse(data || "{}");
+
+      successResponseHandler(reply, obj);
+    });
   } catch (err) {
     errorResponseHandler(reply, 500, err);
   }

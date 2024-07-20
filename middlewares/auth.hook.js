@@ -53,11 +53,13 @@ module.exports.authMiddleware = async function (req, res, next) {
   }
 };
 
-module.exports.checkAdminMiddleware = async function (req, reply) {
+module.exports.checkAdminMiddleware = async function (req, res, next) {
   try {
+    console.log("Checking adming");
     const user = await validateToken(req);
-    if (!isUserAdmin(user)) errorResponseHandler(reply, 401, "Unauthorized!");
+    if (!isUserAdmin(user)) errorResponseHandler(res, 401, "Unauthorized!");
+    next();
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
 };

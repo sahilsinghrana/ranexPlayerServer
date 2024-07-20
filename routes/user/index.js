@@ -9,9 +9,7 @@ router.use("/playlist", userPlaylistRoutes);
 
 router.get("/profile", (req, res) => {
   const user = req.user;
-  console.log(req.user);
   const userProfile = extractUserProfile(user);
-
   successResponseHandler(res, userProfile);
 });
 
