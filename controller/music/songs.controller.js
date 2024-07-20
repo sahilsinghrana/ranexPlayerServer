@@ -94,6 +94,9 @@ module.exports.getPublicSongsController = async function (request, reply) {
     fs.readFile(filesJsonPath, "utf8", function readFileCallback(err, data) {
       if (err) {
         console.log("First errr");
+        errorResponseHandler(reply, 500, {
+          songs: [],
+        });
         return;
       }
 
