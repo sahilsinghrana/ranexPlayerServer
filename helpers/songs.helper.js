@@ -1,6 +1,10 @@
 const prisma = require("../config/db.js");
 
-module.exports.addPublicSong = async function ({ createdBy, filePath, title }) {
+module.exports.addPublicSongToDB = async function ({
+  createdBy,
+  filePath,
+  title,
+}) {
   return await prisma.songs.create({
     data: {
       created_by: createdBy,
@@ -8,4 +12,11 @@ module.exports.addPublicSong = async function ({ createdBy, filePath, title }) {
       title: title,
     },
   });
+};
+
+module.exports.uploadSong = async function (song) {
+  return {
+    url: "",
+    id: "",
+  };
 };

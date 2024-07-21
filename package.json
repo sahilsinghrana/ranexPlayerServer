@@ -2,9 +2,9 @@
   "name": "music",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js --ignore public/",
+    "dev": "nodemon server.js --inspect --ignore public/ ",
     "start": "node server.js",
     "createAdmin": "node ./scripts/makeAdmin.js"
   },
@@ -16,6 +16,7 @@
     "@prisma/client": "^5.16.1",
     "@supabase/supabase-js": "^2.44.2",
     "body-parser": "^1.20.2",
+    "cloudinary": "^2.3.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
