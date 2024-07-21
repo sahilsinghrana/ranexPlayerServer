@@ -88,13 +88,32 @@ module.exports.addSongController = async function (req, res) {
   }
 };
 
-module.exports.getPublicSongsController = async function (request, reply) {
+module.exports.getPublicSongsController = async function (req, res) {
   try {
+    return successResponseHandler(res, {
+      songs: [
+        {
+          title: "Kun Faaya Kun",
+          artist: "A.R Rahman, Mohit Chauhan",
+          album: "Rockstar",
+        },
+        {
+          title: "In My Time",
+          artist: "Europe",
+          album: "Last look at Eden",
+        },
+        {
+          title: "Still Loving You",
+          artist: "Scorpions",
+          album: "Comeblack",
+        },
+      ],
+    });
     // const publicSongs = await prisma.songs.findMany();
     fs.readFile(filesJsonPath, "utf8", function readFileCallback(err, data) {
       if (err) {
         console.log("First errr");
-        errorResponseHandler(reply, 500, {
+        errorResponseHandler(res, 500, {
           songs: [],
         });
         return;
@@ -102,9 +121,9 @@ module.exports.getPublicSongsController = async function (request, reply) {
 
       const obj = JSON.parse(data || "{}");
 
-      successResponseHandler(reply, obj);
+      successResponseHandler(res, obj);
     });
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    errorResponseHandler(res, 500, err);
   }
 };
