@@ -1,5 +1,3 @@
-const fs = require("node:fs");
-
 const path = require("node:path");
 const {
   errorResponseHandler,
@@ -14,85 +12,51 @@ const prisma = require("../../config/db.js");
 const { formidable } = require("formidable");
 const storage = require("../../config/cloudinary.js");
 const { getUserIdFromUserObj } = require("../../helpers/auth.helpers.js");
+const {
+  songsResponseFactory,
+  addPublicSongToDB,
+  deletePublicSongFromDB,
+} = require("../../helpers/songs.helper.js");
 
 const uploadFolder = path.join("public", "uploads", "music");
 
-const filesJsonPath = uploadFolder + "/index.json";
-
 async function addFileToJson(parsedFilesObj) {
-  console.log(parsedFilesObj);
-  return;
-  return Promise.all(
-    Object.values(parsedFilesObj).map((file) => {
-      return new Promise((resolve, reject) => {
-        storage.uploader.upload_large(
-          file[0]?.filepath,
-          {
-            resource_type: "auto",
-            access_mode: "authenticated",
-            folder: "ranexPlayer",
-            use_filename: true,
-          },
-          (err, res) => {
-            if (err) {
-              console.log(err);
-              reject(err);
-            }
-            console.log(res);
-            resolve(res);
-          }
-        );
+  return new Promise(async (resolve, reject) => {
+    const song = parsedFilesObj.song;
+    const meta = parsedFilesObj.meta;
+    const uploadedBy = parsedFilesObj.uploadedBy;
+
+    try {
+      const [res, updateDbWithCloudinaryResponse] = await addPublicSongToDB({
+        meta,
+        uploadedBy,
       });
-    })
-  );
-  return;
-  const files = Object.values(parsedFilesObj).map((file) => {
-    return {
-      filepath: file[0]?.filepath || "",
-      fileName: file[0]?.newFilename || "",
-      originalFilename: file[0]?.originalFilename || "",
-      mimetype: file[0]?.mimetype || "",
-      size: file[0]?.size || "",
-    };
-  });
-
-  fs.readFile(filesJsonPath, "utf8", function readFileCallback(err, data) {
-    if (err) {
-      console.log("First errr");
-      return;
-    }
-
-    const obj = JSON.parse(data || "{}");
-    if (!Array.isArray(obj?.songs)) {
-      obj.songs = [];
-    }
-    obj.songs = obj.songs.concat(...files);
-
-    const json = JSON.stringify(obj);
-
-    fs.writeFile(
-      filesJsonPath,
-      json,
-      { flag: "wx", encoding: "utf-8" },
-      (err) => {
-        if (err) {
-          // console.log("thirid error");
-          return;
+      try {
+        const cloudinaryResponse = await cloudinaryUploader(song);
+        try {
+          const updatedRes = await updateDbWithCloudinaryResponse(
+            cloudinaryResponse
+          );
+          resolve(updatedRes);
+        } catch (err) {
+          cloudinaryDestroyer(cloudinaryResponse?.public_id);
+          throw new Error(err);
         }
-        console.log("added too file", json);
+      } catch (err) {
+        deletePublicSongFromDB(res.id);
+        throw new Error(err);
       }
-    ); // write it back
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 
 module.exports.addSongController = function (req, res) {
-  console.log({
-    user: req.user,
-  });
   const userID = getUserIdFromUserObj(req.user);
   try {
     const form = formidable({
-      multiples: true,
+      multiples: false,
       uploadDir: uploadFolder,
       maxFileSize: 100 * 1024 * 1024, // 10MB
       filename: (name, _, part) => {
@@ -113,79 +77,78 @@ module.exports.addSongController = function (req, res) {
     });
     form.parse(req, async (err, fields, files) => {
       if (err) throw new Error(err);
-      // console.log("Parsed", files);
-      // files.forEach;
-      console.log({
-        fields,
-        files,
-      });
+      if (!Array.isArray(fields.meta)) throw new Error("MetaData not provided");
+      if (!Array.isArray(files?.file)) throw new Error("Song Required");
 
-      const processedFileData = Object.entries(files).map(([key, values]) => {
-        const songFile = values[0];
-        const albumArt = values[1];
-        let meta = fields[key.concat(".", "meta")];
-        if (Array.isArray(meta)) {
-          const metaStr = meta[0];
-          try {
-            meta = JSON.parse(metaStr);
-          } catch (err) {
-            console.log("Invalid Meta");
-          }
-        }
-        return {
-          song: songFile,
-          albumArt: albumArt,
-          meta: meta,
-          uploadedBy: userID,
-        };
-      });
+      let meta = fields.meta;
+      const metaStr = meta[0];
+      try {
+        meta = JSON.parse(metaStr);
+      } catch (err) {
+        throw new Error("Invalid Meta");
+      }
 
-      await addFileToJson(processedFileData);
-
-      res.json({ message: "hell", fields, files });
+      const songFile = files?.file?.[0];
+      if (!songFile) throw new Error("Song Required");
+      const processedFileData = {
+        song: songFile,
+        meta: meta,
+        uploadedBy: userID,
+      };
+      try {
+        await addFileToJson(processedFileData);
+        successResponseHandler(res, { message: "Uploaded Successfully!" });
+      } catch (err) {
+        return errorResponseHandler(res, 500, err);
+      }
     });
   } catch (err) {
-    console.log(err);
     return errorResponseHandler(res, 500, err);
   }
 };
 
 module.exports.getPublicSongsController = async function (req, res) {
   try {
+    const songs = await prisma.songs.findMany();
     return successResponseHandler(res, {
-      songs: [
-        {
-          title: "Kun Faaya Kun",
-          artist: "A.R Rahman, Mohit Chauhan",
-          album: "Rockstar",
-        },
-        {
-          title: "In My Time",
-          artist: "Europe",
-          album: "Last look at Eden",
-        },
-        {
-          title: "Still Loving You",
-          artist: "Scorpions",
-          album: "Comeblack",
-        },
-      ],
-    });
-    // const publicSongs = await prisma.songs.findMany();
-    fs.readFile(filesJsonPath, "utf8", function readFileCallback(err, data) {
-      if (err) {
-        console.log("First errr");
-        errorResponseHandler(res, 500, {
-          songs: [],
-        });
-        return;
-      }
-
-      const obj = JSON.parse(data || "{}");
-
-      successResponseHandler(res, obj);
+      songs: songs.map(songsResponseFactory),
     });
   } catch (err) {
     errorResponseHandler(res, 500, err);
   }
 };
+
+function cloudinaryUploader(song) {
+  return new Promise((resolve, reject) => {
+    storage.uploader.upload_large(
+      song.filepath,
+      {
+        resource_type: "raw",
+        access_mode: "authenticated",
+        folder: "ranexPlayer",
+        use_filename: true,
+        type: "authenticated",
+        categorization: "google_tagging",
+        auto_tagging: 0.6,
+      },
+      (err, res) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(res);
+      }
+    );
+  });
+}
+
+async function cloudinaryDestroyer(public_id, options) {
+  return new Promise((resolve, reject) => {
+    storage.uploader.destroy(public_id, options, (err, res) => {
+      console.log("Destroyer", public_id);
+      console.log("err", err);
+      console.log(res);
+      if (err) reject(err);
+      resolve(res);
+    });
+  });
+}
