@@ -57,6 +57,7 @@ module.exports.songsResponseFactory = function (song) {
     album: song.album,
     artist: song.artist,
     songId: song.id,
+    path: song.path,
     coverArt: {
       image: coverArt.image,
       thumbnails: coverArt.thumbnails || {},
