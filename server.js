@@ -21,7 +21,7 @@ app.use(cors());
 app.use(
   compression({
     level: 5,
-  })
+  }),
 );
 
 app.use(cookieParser());

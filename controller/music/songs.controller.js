@@ -34,9 +34,8 @@ async function addFileToJson(parsedFilesObj) {
       try {
         const cloudinaryResponse = await cloudinaryUploader(song);
         try {
-          const updatedRes = await updateDbWithCloudinaryResponse(
-            cloudinaryResponse
-          );
+          const updatedRes =
+            await updateDbWithCloudinaryResponse(cloudinaryResponse);
           resolve(updatedRes);
         } catch (err) {
           cloudinaryDestroyer(cloudinaryResponse?.public_id);
@@ -67,7 +66,7 @@ module.exports.addSongController = function (req, res) {
           name
             .replace(/\s+/g, "_")
             .replace(/[^\w\s]/g, "")
-            .concat("_", generateRandomId(), ".", ext)
+            .concat("_", generateRandomId(), ".", ext),
         );
       },
       allowEmptyFiles: false,
@@ -145,7 +144,7 @@ function cloudinaryUploader(song) {
           reject(err);
         }
         resolve(res);
-      }
+      },
     );
   });
 }
