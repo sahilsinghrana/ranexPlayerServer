@@ -121,11 +121,6 @@ module.exports.getPublicSongsController = async function (req, res) {
 module.exports.getPublicSongController = async function (req, res) {
   const songId = req.params.songId;
   try {
-    // const song = await prisma.songs.findFirst({
-    //   where: {
-    //     id: songId,
-    //   },
-    // });
     successResponseHandler(res, { message: "HOla", songId });
   } catch (err) {
     errorResponseHandler(res, 500, err);
@@ -158,9 +153,6 @@ function cloudinaryUploader(song) {
 async function cloudinaryDestroyer(public_id, options) {
   return new Promise((resolve, reject) => {
     storage.uploader.destroy(public_id, options, (err, res) => {
-      console.log("Destroyer", public_id);
-      console.log("err", err);
-      console.log(res);
       if (err) reject(err);
       resolve(res);
     });

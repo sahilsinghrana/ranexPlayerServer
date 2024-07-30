@@ -7,19 +7,18 @@ const {
   removeSongFromUserPlaylist,
   reorderSongInUserPlaylist,
 } = require("../../controller/music/playlist");
-const { authMiddleware } = require("../../middlewares/auth.hook");
 
 const router = require("express").Router();
 
 router
   .route("/")
-  .get(authMiddleware, getAllUserPlaylists)
-  .post(authMiddleware, addUserPlaylist)
-  .delete(authMiddleware, removePlaylist)
-  .patch(authMiddleware, updateUserPlaylist);
+  .get(getAllUserPlaylists)
+  .post(addUserPlaylist)
+  .delete(removePlaylist)
+  .patch(updateUserPlaylist);
 
-router.post("/song", authMiddleware, addSongToUserPlaylist);
-router.delete("/song", authMiddleware, removeSongFromUserPlaylist);
-router.patch("/song", authMiddleware, reorderSongInUserPlaylist);
+router.post("/song", addSongToUserPlaylist);
+router.delete("/song", removeSongFromUserPlaylist);
+router.patch("/song", reorderSongInUserPlaylist);
 
 module.exports = router;

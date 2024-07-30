@@ -1,7 +1,6 @@
 const router = require("express").Router();
 
 const db = require("../../config/db.js");
-// const streamController = require("../../controller/music/stream.js");
 const {
   errorResponseHandler,
   successResponseHandler,
