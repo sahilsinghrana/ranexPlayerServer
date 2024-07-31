@@ -34,9 +34,8 @@ async function addFileToJson(parsedFilesObj) {
       try {
         const cloudinaryResponse = await cloudinaryUploader(song);
         try {
-          const updatedRes = await updateDbWithCloudinaryResponse(
-            cloudinaryResponse
-          );
+          const updatedRes =
+            await updateDbWithCloudinaryResponse(cloudinaryResponse);
           resolve(updatedRes);
         } catch (err) {
           cloudinaryDestroyer(cloudinaryResponse?.public_id);
@@ -67,7 +66,7 @@ module.exports.addSongController = function (req, res) {
           name
             .replace(/\s+/g, "_")
             .replace(/[^\w\s]/g, "")
-            .concat("_", generateRandomId(), ".", ext)
+            .concat("_", generateRandomId(), ".", ext),
         );
       },
       allowEmptyFiles: false,
@@ -121,11 +120,6 @@ module.exports.getPublicSongsController = async function (req, res) {
 module.exports.getPublicSongController = async function (req, res) {
   const songId = req.params.songId;
   try {
-    // const song = await prisma.songs.findFirst({
-    //   where: {
-    //     id: songId,
-    //   },
-    // });
     successResponseHandler(res, { message: "HOla", songId });
   } catch (err) {
     errorResponseHandler(res, 500, err);
@@ -150,19 +144,69 @@ function cloudinaryUploader(song) {
           reject(err);
         }
         resolve(res);
-      }
+      },
     );
   });
 }
 
-async function cloudinaryDestroyer(public_id, options) {
+async function cloudinaryDestroyer(public_id, options = {}) {
+  console.log({ public_id });
   return new Promise((resolve, reject) => {
-    storage.uploader.destroy(public_id, options, (err, res) => {
-      console.log("Destroyer", public_id);
-      console.log("err", err);
-      console.log(res);
-      if (err) reject(err);
-      resolve(res);
-    });
+    storage.uploader.destroy(
+      public_id,
+      {
+        resource_type: "raw",
+        type: "authenticated",
+        ...options,
+      },
+      (err, res) => {
+        if (err) reject(err);
+        resolve(res);
+      },
+    );
   });
 }
+
+module.exports.publicSongDeleteController = async function (req, res) {
+  try {
+    const { songId } = req.params;
+    console.log({ songId });
+    await prisma.songs
+      .findFirst({
+        where: {
+          id: songId,
+        },
+      })
+      .then((song) => {
+        console.log("song found");
+        if (song) {
+          return song;
+        }
+        throw new Error("Song not found");
+      })
+      .then((song) => {
+        const { cloudinary = {} } = song;
+        const { public_id } = cloudinary;
+        return cloudinaryDestroyer(public_id);
+      })
+      .then((res) => {
+        if (res?.result === "ok") {
+          return prisma.songs.delete({
+            where: {
+              id: songId,
+            },
+          });
+        }
+      })
+      .then(() => {
+        successResponseHandler(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        errorResponseHandler(res, 500, err);
+      });
+  } catch (err) {
+    console.log(err);
+    errorResponseHandler(res, 500, err);
+  }
+};

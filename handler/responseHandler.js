@@ -1,6 +1,6 @@
 module.exports.successResponseHandler = function (res, responseData) {
   res.status(200);
-  res.send({
+  res.json({
     data: responseData,
     message: "Success",
     responseCode: 1,

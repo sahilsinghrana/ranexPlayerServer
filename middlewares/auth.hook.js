@@ -55,11 +55,11 @@ module.exports.authMiddleware = async function (req, res, next) {
 
 module.exports.checkAdminMiddleware = async function (req, res, next) {
   try {
-    console.log("Checking adming");
     const user = await validateToken(req);
-    if (!isUserAdmin(user)) errorResponseHandler(res, 401, "Unauthorized!");
+    req.user = user;
+    if (!isUserAdmin(user)) throw new Error("Unauthorized!");
     next();
   } catch (err) {
-    errorResponseHandler(res, 500, err);
+    errorResponseHandler(res, 401, err);
   }
 };

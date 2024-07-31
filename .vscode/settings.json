@@ -1,19 +1,17 @@
 {
-    "remote.otherPortsAttributes": {
-        "elevateIfNeeded": true,
-        "onAutoForward": "silent",
-        
+  "remote.otherPortsAttributes": {
+    "elevateIfNeeded": true,
+    "onAutoForward": "silent"
+  },
+  "remote.portsAttributes": {
+    "443": {
+      "protocol": "https"
     },
-    "remote.portsAttributes": {
-
-        "443": {
-            "protocol": "https"
-        },
-        "8443": {
-            "protocol": "https"
-        },
-        "3000" : {
-            "visibility" : "Public"
-        }
+    "8443": {
+      "protocol": "https"
+    },
+    "3000": {
+      "visibility": "Public"
     }
+  }
 }

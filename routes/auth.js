@@ -5,10 +5,9 @@ const {
   signupController,
   logoutController,
 } = require("../controller/auth.controller.js");
-const { verifyAccessToken } = require("../middlewares/auth.hook.js");
 
-router.post("/login", verifyAccessToken, loginController);
-router.post("/signup", verifyAccessToken, signupController);
-router.get("/logout", verifyAccessToken, logoutController);
+router.post("/login", loginController);
+router.post("/signup", signupController);
+router.get("/logout", logoutController);
 
 module.exports = router;

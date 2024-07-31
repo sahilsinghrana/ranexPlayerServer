@@ -10,7 +10,6 @@ const {
   addPublicPlaylist,
   getPublicPlaylists,
 } = require("../../helpers/playlist.helpers.js");
-const { checkAdminMiddleware } = require("../../middlewares/auth.hook.js");
 
 module.exports.getPublicPlaylistsConstroller = async function (request, reply) {
   try {
@@ -21,19 +20,21 @@ module.exports.getPublicPlaylistsConstroller = async function (request, reply) {
   }
 };
 
-module.exports.addPublicPlaylistController = async function (request, reply) {
-  checkAdminMiddleware(request, reply);
-  const userId = getUserIdFromUserObj(request.user);
+module.exports.addPublicPlaylistController = async function (req, res) {
+  const userId = getUserIdFromUserObj(req.user);
 
-  const { title } = request.body;
+  const { playlistName } = req.body;
+
+  if (!playlistName) throw new Error("Playlist Name is required");
   try {
     const addedPlaylist = await addPublicPlaylist({
-      title,
+      title: playlistName,
       userId,
     });
-    successResponseHandler(reply, addedPlaylist);
+    successResponseHandler(res, addedPlaylist);
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    // TODO create new error class with http status codes
+    errorResponseHandler(res, err.status || 500, err);
   }
 };
 
@@ -69,20 +70,21 @@ module.exports.addUserPlaylist = async function (request, reply) {
   }
 };
 
-module.exports.removePlaylist = async function (request, reply) {
+module.exports.removePlaylist = async function (req, res) {
   try {
-    const { playlistId } = request.body;
+    const { playlistId } = req.params;
+    const userId = getUserIdFromUserObj(req.user);
     if (!playlistId) throw new Error("playlistId is required");
-    const userId = getUserIdFromUserObj(request.user);
-    const updatedPlaylist = await prisma.user_playlists.delete({
+    const updatedPlaylist = await prisma.playlists.delete({
       where: {
         created_by: userId,
-        id: playlistId,
+        id: Number(playlistId),
       },
     });
-    successResponseHandler(reply, updatedPlaylist);
+    successResponseHandler(res, updatedPlaylist);
   } catch (err) {
-    errorResponseHandler(reply, 500, err);
+    console.log(err);
+    errorResponseHandler(res, 500, err);
   }
 };
 

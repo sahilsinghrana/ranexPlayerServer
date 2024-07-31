@@ -15,7 +15,7 @@ if (!email)
   throw new Error("Email not provided! ADD {ADMIN_EMAIL} in your env file");
 if (!password)
   throw new Error(
-    "password not provided! ADD {ADMIN_PASSWORD} in your env file"
+    "password not provided! ADD {ADMIN_PASSWORD} in your env file",
   );
 
 async function main() {

@@ -5,9 +5,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+
 const routes = require("./routes/index.js");
 
 const port = process.env.PORT || 3000;
+
 const app = express();
 
 BigInt.prototype.toJSON = function () {
@@ -18,9 +20,10 @@ BigInt.prototype.toJSON = function () {
 app.use(cors());
 app.use(
   compression({
-    level: 7,
-  })
+    level: 5,
+  }),
 );
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 
