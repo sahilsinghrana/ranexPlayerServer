@@ -328,9 +328,9 @@ model playlists {
   id              BigInt            @id @default(autoincrement())
   created_at      DateTime          @default(now()) @db.Timestamptz(6)
   title           String            @unique @db.VarChar
-  isPublic        Boolean           @default(false)
   created_by      String?           @db.Uuid
   updated_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  featuredOrder   BigInt?
   users           users?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   playlists_songs playlists_songs[]
 
@@ -356,11 +356,11 @@ model songs {
   title           String            @unique @db.VarChar
   path            String?           @unique
   created_by      String?           @db.Uuid
-  artist          String?
-  year            String?
-  album           String?
   cloudinary      Json?
   musicbrainz     Json
+  album           String?
+  artist          String?
+  year            String?
   playlists_songs playlists_songs[]
   users           users?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
