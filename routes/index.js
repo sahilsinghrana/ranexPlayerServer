@@ -9,10 +9,11 @@ const authRoutes = require("./auth.js");
 const musicRoutes = require("./music/index.js");
 const userRoutes = require("./user/index.js");
 
-router.use(verifyAccessToken, authRoutes);
+router.get("/", async (_, res) => res.status(200).send());
+
 router.use("/music", verifyAccessToken, musicRoutes);
 router.use("/user", verifyAccessToken, authMiddleware, userRoutes);
 
-router.get("/", async (_, res) => res.status(200));
+router.use(verifyAccessToken, authRoutes);
 
 module.exports = router;
