@@ -13,9 +13,6 @@ router.use(verifyAccessToken, authRoutes);
 router.use("/music", verifyAccessToken, musicRoutes);
 router.use("/user", verifyAccessToken, authMiddleware, userRoutes);
 
-router.get("/", async (request, response) => {
-  response.status(200).json({
-    hello: "world",
-  });
-});
+router.get("/", async (_, res) => res.status(200));
+
 module.exports = router;
