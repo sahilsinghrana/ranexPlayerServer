@@ -43,6 +43,8 @@ function isUserAdmin(user = {}) {
   return getRoleFromUser(user) === USER_ROLES.ADMIN;
 }
 
+module.exports.isUserAdmin = isUserAdmin;
+
 module.exports.authMiddleware = async function (req, res, next) {
   try {
     const user = await validateToken(req);

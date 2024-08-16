@@ -10,6 +10,7 @@ const {
   addPublicPlaylist,
   getPublicPlaylists,
 } = require("../../helpers/playlist.helpers.js");
+const { isUserAdmin } = require("../../middlewares/auth.hook.js");
 
 module.exports.getPublicPlaylistsConstroller = async function (request, reply) {
   try {
@@ -75,11 +76,15 @@ module.exports.removePlaylist = async function (req, res) {
     const { playlistId } = req.params;
     const userId = getUserIdFromUserObj(req.user);
     if (!playlistId) throw new Error("playlistId is required");
+
+    const whereCondition = {
+      id: playlistId,
+    };
+    if (!isUserAdmin(req.user)) {
+      whereCondition.created_by = userId;
+    }
     const updatedPlaylist = await prisma.playlists.delete({
-      where: {
-        created_by: userId,
-        id: Number(playlistId),
-      },
+      where: whereCondition,
     });
     successResponseHandler(res, updatedPlaylist);
   } catch (err) {
@@ -123,4 +128,22 @@ module.exports.removeSongFromUserPlaylist = function () {
 
 module.exports.reorderSongInUserPlaylist = function () {
   return "reordering song playlist";
+};
+
+module.exports.getPublicPlaylistByIdController = async function (req, res) {
+  try {
+    const { playlistId } = req.params;
+    if (!playlistId) throw new Error("playlistId is required");
+
+    const whereCondition = {
+      id: playlistId,
+    };
+    const foundPlaylist = await prisma.playlists.findFirst({
+      where: whereCondition,
+    });
+    successResponseHandler(res, foundPlaylist);
+  } catch (err) {
+    console.log(err);
+    errorResponseHandler(res, 500, err);
+  }
 };

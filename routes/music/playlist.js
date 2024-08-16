@@ -4,6 +4,7 @@ const {
   addPublicPlaylistController,
   getPublicPlaylistsConstroller,
   removePlaylist,
+  getPublicPlaylistByIdController,
 } = require("../../controller/music/playlist.js");
 
 const { checkAdminMiddleware } = require("../../middlewares/auth.hook.js");
@@ -13,6 +14,9 @@ router
   .get(getPublicPlaylistsConstroller)
   .post(checkAdminMiddleware, addPublicPlaylistController);
 
-router.route("/:playlistId").delete(checkAdminMiddleware, removePlaylist);
+router
+  .route("/:playlistId")
+  .get(getPublicPlaylistByIdController)
+  .delete(checkAdminMiddleware, removePlaylist);
 
 module.exports = router;
