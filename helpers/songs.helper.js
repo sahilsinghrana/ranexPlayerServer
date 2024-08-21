@@ -1,4 +1,5 @@
 const prisma = require("../config/db.js");
+const prismaErrorHandler = require("../handler/prismaErrorHandler.js");
 
 module.exports.addPublicSongToDB = async function ({ meta, uploadedBy }) {
   try {
@@ -67,4 +68,17 @@ module.exports.songsResponseFactory = function (song) {
     recordingID: musicBrainz.recordingID,
     releaseDate: musicBrainz.releaseDate,
   };
+};
+
+module.exports.getSongById = async function (songId) {
+  try {
+    const song = await prisma.songs.findUnique({
+      where: {
+        id: songId,
+      },
+    });
+    return song;
+  } catch (err) {
+    prismaErrorHandler(err);
+  }
 };

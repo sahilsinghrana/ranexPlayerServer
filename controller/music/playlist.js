@@ -9,7 +9,9 @@ const { getUserIdFromUserObj } = require("../../helpers/auth.helpers.js");
 const {
   addPublicPlaylist,
   getPublicPlaylists,
+  getPlaylistById,
 } = require("../../helpers/playlist.helpers.js");
+const { getSongById } = require("../../helpers/songs.helper.js");
 const { isUserAdmin } = require("../../middlewares/auth.hook.js");
 
 module.exports.getPublicPlaylistsConstroller = async function (request, reply) {
@@ -93,8 +95,22 @@ module.exports.removePlaylist = async function (req, res) {
   }
 };
 
-module.exports.getSongsFromPlaylist = function () {
-  return "Retrieving songs from playlist";
+module.exports.getPlaylistSongsController = async function (req, res) {
+  const { playlistId } = req.params;
+  try {
+    if (!playlistId) throw new Error("playlistId is required");
+    const songs = await prisma.playlists_songs.findMany({
+      where: {
+        playlist_id: playlistId,
+      },
+      include: {
+        songs: true,
+      },
+    });
+    successResponseHandler(res, songs);
+  } catch (err) {
+    errorResponseHandler(res, 500, err);
+  }
 };
 
 module.exports.updateUserPlaylist = async function (request, reply) {
@@ -115,6 +131,38 @@ module.exports.updateUserPlaylist = async function (request, reply) {
     successResponseHandler(reply, updatedPlaylist);
   } catch (err) {
     errorResponseHandler(reply, 500, err);
+  }
+};
+
+module.exports.addSongToPublicPlaylistController = async function (req, res) {
+  try {
+    const { playlistId, songId } = req.params;
+
+    if (!playlistId || !songId)
+      throw new Error("playlistId and songId are required");
+    const playlist = await getPlaylistById(playlistId);
+    if (!playlist) throw new Error("Playlist not found");
+    const song = await getSongById(songId);
+    if (!song) throw new Error("Song not found");
+
+    const playlistSong = await prisma.playlists_songs.findFirst({
+      where: {
+        playlist_id: playlistId,
+        song_id: songId,
+      },
+    });
+    if (playlistSong) throw new Error("Song already exists in playlist");
+
+    const linkedSong = await prisma.playlists_songs.create({
+      data: {
+        playlist_id: playlist.id,
+        song_id: song.id,
+      },
+    });
+
+    successResponseHandler(res, linkedSong);
+  } catch (err) {
+    errorResponseHandler(res, 500, err);
   }
 };
 

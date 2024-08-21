@@ -18,3 +18,16 @@ module.exports.addPublicPlaylist = async function ({ title, userId }) {
     prismaErrorHandler(err);
   }
 };
+
+module.exports.getPlaylistById = async function (playlistId) {
+  try {
+    const playlist = await prisma.playlists.findUnique({
+      where: {
+        id: playlistId,
+      },
+    });
+    return playlist;
+  } catch (err) {
+    prismaErrorHandler(err);
+  }
+};

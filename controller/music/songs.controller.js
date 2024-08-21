@@ -210,3 +210,32 @@ module.exports.publicSongDeleteController = async function (req, res) {
     errorResponseHandler(res, 500, err);
   }
 };
+
+module.exports.searchSongController = async function (req, res) {
+  try {
+    const { q } = req.query;
+    const songs = await prisma.songs.findMany({
+      where: {
+        OR: [
+          {
+            title: {
+              contains: q,
+              mode: "insensitive",
+            },
+          },
+          {
+            artist: {
+              contains: q,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+    return successResponseHandler(res, {
+      songs: songs.map(songsResponseFactory),
+    });
+  } catch (err) {
+    errorResponseHandler(res, 500, err);
+  }
+};
